@@ -18,7 +18,8 @@ RUN grep -qx 'supervisord' /usr/local/bin/entrypoint.sh \
  && chmod 644 /etc/nginx/nginx.conf
 
 COPY --chmod=555 start.sh run.sh /usr/local/bin/
-COPY --chmod=444 create-admin.php /usr/local/share/railway/create-admin.php
+COPY create-admin.php /usr/local/share/railway/create-admin.php
+RUN chmod 755 /usr/local/share/railway && chmod 444 /usr/local/share/railway/create-admin.php
 
 EXPOSE 8000
 ENTRYPOINT ["/usr/local/bin/start.sh"]

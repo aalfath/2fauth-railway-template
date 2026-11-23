@@ -3,7 +3,8 @@
 set -eu
 
 # Sensible fixed settings for Railway (each can still be overridden by a variable).
-export APP_ENV="${APP_ENV:-production}"
+# Upstream recommends "local": "production" makes its console setup commands ask for confirmation.
+export APP_ENV="${APP_ENV:-local}"
 export APP_DEBUG="${APP_DEBUG:-false}"
 export LOG_CHANNEL="${LOG_CHANNEL:-stderr}"
 export LOG_LEVEL="${LOG_LEVEL:-notice}"
