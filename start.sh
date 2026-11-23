@@ -14,4 +14,5 @@ if [ "$(stat -c %u:%g /2fauth)" != "1000:1000" ] || find /2fauth -xdev ! -user 1
 fi
 chmod 700 /2fauth
 
-exec setpriv --reuid=1000 --regid=1000 --clear-groups /usr/local/bin/run.sh
+# busybox su -p keeps the environment (Railway variables) and execs in place.
+exec su -p -s /bin/sh -c /usr/local/bin/run.sh "$(getent passwd 1000 | cut -d: -f1)"

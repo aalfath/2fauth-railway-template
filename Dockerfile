@@ -8,6 +8,10 @@ USER root
 # Passport keys, caches) and then runs supervisord, which keeps running when nginx or
 # php-fpm dies (autorestart=false). We reuse the setup part only and supervise the two
 # processes ourselves, so an unexpected stop exits non-zero and Railway restarts it.
+# uid/gid 1000 owns /srv and /2fauth in the upstream image but has no passwd entry.
+RUN (getent group 1000 >/dev/null || addgroup -g 1000 tfa) \
+ && (getent passwd 1000 >/dev/null || adduser -D -H -h /srv -u 1000 -G tfa -s /bin/sh tfa)
+
 RUN grep -qx 'supervisord' /usr/local/bin/entrypoint.sh \
  && sed '/^supervisord$/d' /usr/local/bin/entrypoint.sh > /usr/local/bin/2fauth-setup.sh \
  && chmod 555 /usr/local/bin/2fauth-setup.sh \
