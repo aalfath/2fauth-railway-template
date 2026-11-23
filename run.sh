@@ -47,6 +47,7 @@ while kill -0 "$FPM_PID" 2>/dev/null && kill -0 "$NGINX_PID" 2>/dev/null; do
   sleep 2 &
   wait $! 2>/dev/null || true
 done
+set +e
 code=0
 if ! kill -0 "$FPM_PID" 2>/dev/null; then wait "$FPM_PID" 2>/dev/null; code=$?; who=php-fpm; else wait "$NGINX_PID" 2>/dev/null; code=$?; who=nginx; fi
 echo "railway: $who exited unexpectedly (code $code); stopping so Railway restarts the service" >&2
