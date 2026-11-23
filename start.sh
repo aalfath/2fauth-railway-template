@@ -15,7 +15,7 @@ fi
 chmod 700 /2fauth
 
 # nginx (as uid 1000) logs to /dev/stdout and /dev/stderr, which are root-owned pipes here.
-chown 1000:1000 /proc/self/fd/1 /proc/self/fd/2 2>/dev/null || true
+chown 1000:1000 "/proc/$$/fd/1" "/proc/$$/fd/2" || true
 
 # busybox su -p keeps the environment (Railway variables) and execs in place.
 exec su -p -s /bin/sh -c /usr/local/bin/run.sh "$(getent passwd 1000 | cut -d: -f1)"
