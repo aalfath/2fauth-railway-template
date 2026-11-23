@@ -41,11 +41,15 @@ FPM_PID=$!
 /usr/sbin/nginx -g 'daemon off;' &
 NGINX_PID=$!
 
-set +e
-wait -n
-code=$?
-set -e
-echo "railway: a process exited unexpectedly (code $code); stopping so Railway restarts the service" >&2
+# Exit non-zero as soon as either process is gone (busybox `wait -n` misses a child
+# that died before it was called, so poll instead).
+while kill -0 "$FPM_PID" 2>/dev/null && kill -0 "$NGINX_PID" 2>/dev/null; do
+  sleep 2 &
+  wait $! 2>/dev/null || true
+done
+code=0
+if ! kill -0 "$FPM_PID" 2>/dev/null; then wait "$FPM_PID" 2>/dev/null; code=$?; who=php-fpm; else wait "$NGINX_PID" 2>/dev/null; code=$?; who=nginx; fi
+echo "railway: $who exited unexpectedly (code $code); stopping so Railway restarts the service" >&2
 kill -TERM "$FPM_PID" "$NGINX_PID" 2>/dev/null || true
 [ "$code" -eq 0 ] && code=1
 exit "$code"
